@@ -13,6 +13,10 @@ export class DatePickerComponent {
 
   public startDate;
   public endDate;
+  
+  public intervalDays;
+  public intervalWeeks;
+  public intervalWeekdays;
 
   constructor(private dateService: DateService) { }
 
@@ -20,7 +24,14 @@ export class DatePickerComponent {
     let startDateStr = this.startDate.year + '-' + this.startDate.month + '-' + this.startDate.day;
     let endDateStr = this.endDate.year + '-' + this.endDate.month + '-' + this.endDate.day;
 
-    let result = this.dateService.calculateDate(startDateStr, endDateStr);
+    this.dateService.calculateDate(startDateStr, endDateStr).subscribe((data) => {
+        this.intervalDays   = data['days'];
+        this.intervalWeeks  = data['weeks'];
+        this.intervalWeekdays = data['weekdays'];
+      }, (error) => {
+        console.log('Error! ', error);
+      });
+    
   }
 
 }

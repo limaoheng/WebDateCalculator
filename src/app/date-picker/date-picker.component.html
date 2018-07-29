@@ -34,5 +34,13 @@
 </form>
 
 <hr/>
-<pre>Model: {{ startDate  }}</pre>
-<pre>Model: {{ endDate  }}</pre>
+<div *ngIf="startDate && endDate">
+	<pre>Start Date: {{ startDate.year + '-' + startDate.month + '-' + startDate.day  }}</pre>
+	<pre>End Date: {{ endDate.year + '-' + endDate.month + '-' + endDate.day  }}</pre>
+</div>
+
+<div *ngIf="intervalDays">
+	<pre>Days: {{ intervalDays  }}</pre>
+	<pre>Weeks: {{ intervalWeeks  }}</pre>
+	<pre>Weekdays: {{ intervalWeekdays  }}</pre>
+</div>
