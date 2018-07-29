@@ -1,0 +1,38 @@
+<ngb-alert [dismissible]="false">
+  Please pick a pair of start and end dates. Please make sure you have made end date later than the start date.
+</ngb-alert>
+
+<form #dateFrom="ngForm" class="form-inline center">
+  <div class="form-group m-2" >
+    <div class="input-group">
+      <label for="dp1">Start Date: </label>
+      <input id="dp1" class="form-control" placeholder="yyyy-mm-dd"
+             name="dp1" [(ngModel)]="startDate" ngbDatepicker #startDateInput="ngbDatepicker">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" (click)="startDateInput.toggle()" type="button">
+          <img src="assets/img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>
+        </button>
+      </div>
+    </div>
+    </div>
+    
+    <div class="form-group m-2">
+    <div class="input-group">
+      <label for="dp2">End Date: </label>
+      <input id="dp2" class="form-control" placeholder="yyyy-mm-dd" 
+             name="dp2" [(ngModel)]="endDate" ngbDatepicker #endDateInput="ngbDatepicker">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" (click)="endDateInput.toggle()" type="button">
+          <img src="assets/img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <button type="button" class="btn btn-primary m-2" [disabled]="!dateFrom.form.valid || !dateFrom.form.touched" 
+  		(click)="onClick($event)">Submit</button>
+</form>
+
+<hr/>
+<pre>Model: {{ startDate  }}</pre>
+<pre>Model: {{ endDate  }}</pre>
