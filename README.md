@@ -6,7 +6,7 @@ This project is an experiemental project using Angular 6 with PHP. This is for c
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-Furthermore, run `php -S -t php/` to use build in PHP server to serve the backend.
+Furthermore, run `php -S localhost:80 -t php/` to use build in PHP server to serve the backend.
 
 ## Build
 

@@ -7,23 +7,32 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DateService {
-
-  private form = new FormData;
   
-  constructor(private http: HttpClient) { 
-    
-    this.form.append('controller', 'Date');
-  
+  constructor(private http: HttpClient) {
   }
   
-  public calculateDate(startDate: string, endDate: string): Observable<Object> {
+  public calculateDate(startDate: string, endDate: string, startTimeZone: string, endTimeZone: string): Observable<Object> {
     
-    
-    this.form.append('startDate' , startDate);
-    this.form.append('endDate' , endDate);
-    this.form.append('operation', 'calculateDate');
-    return this.http.post('http://localhost/dispatch.php', this.form);
+    const form = this.getRequestBody();
+    form.append('startDate' , startDate);
+    form.append('endDate' , endDate);
+    form.append('startTimeZone' , startTimeZone);
+    form.append('endTimeZone' , endTimeZone);
+    form.append('operation', 'calculateDate');
+    return this.http.post('http://localhost/dispatch.php', form);
       
+  }
+  
+  public getSupportedTimeZones(): Observable<Object> {
+    const form = this.getRequestBody();
+    form.append('operation', 'getSupportedTimeZones');
+    return this.http.post('http://localhost/dispatch.php', form);
+  }
+  
+  private getRequestBody() {
+    const form = new FormData;
+    form.append('controller', 'Date');
+    return form;
   }
  
 }

@@ -9,56 +9,57 @@ class DateController extends Controller {
 	 * @return NULL[]
 	 */
 	function calculateDate() {
-		$startDate = $_POST['startDate'];
-		$endDate = $_POST['endDate'];
+		$startDate 			= $_POST['startDate'];
+		$endDate 			= $_POST['endDate'];
+		$startTimeZone 		= $_POST['startTimeZone'] !== undefined && !empty($_POST['startTimeZone']) ? $_POST['startTimeZone'] : 'UTC';
+		$endTimeZone 		= $_POST['endTimeZone'] !== undefined && !empty($_POST['endTimeZone']) ? $_POST['endTimeZone'] : 'UTC';
 		
 		// Do some validation
-		if (empty($startDate)) {
-			return;
+		if (!$this->__validateDateInput($startDate) || !$this->__validateDateInput($endDate) ) {
+			throw new Exception("Please input correct date. Input start date: $startDate, and input end date: $endDate");
 		}
 		
-		if (empty($endDate)) {
-			return;
+		if (!$this->__validateTimeZoneInput($startTimeZone) || !$this->__validateTimeZoneInput($endTimeZone) ) {
+			throw new Exception("Please input correct time zone: start timezone: $startTimeZone and end timezone: $endTimeZone");
 		}
 		
 		$startDateObj = new DateTime($startDate);
+		$startDateObj->setTimezone(new DateTimeZone($startTimeZone));
 		$endDateObj = new DateTime($endDate);
+		$endDateObj->setTimezone(new DateTimeZone($endTimeZone));
 		
-		$result = array();
-		$interval = $startDateObj->diff($endDateObj);
+		$dateCal = new DateCalculator($startDateObj, $endDateObj);
+		$days = $dateCal->getDays();
+		$weeks = $dateCal->getFullWeeks();
+		$weekdays = $dateCal->getWeekdays();
+		$weekdaysUsingLoop = $dateCal->getWeekdaysUsingLoop();
 		
-		$result['days'] 		= $interval->days;
-		$result['weeks'] 		= floor($interval->days / 7);
+		$result = array();		
 		
-		// For some reason, the property weekdays in DateInterval can't get set. Hence have to do it myself.
-		$result['weekdays'] 	= $this->__getWeekdays($startDateObj, $endDateObj); 
+		$result['days'] 		= $days;
+		$result['weeks'] 		= $weeks;
+		$result['weekdays'] 	= $weekdays;
+		$result['weekdaysUsingLoop'] 	= $weekdaysUsingLoop;
 		
 		return $result;
 	}
 	
-	/**
-	 * Get the weekdays from two dates.
-	 * 
-	 * @param unknown $startDateObj
-	 * @param unknown $endDateObj
-	 */
-	function __getWeekdays($startDateObj, $endDateObj) {
-		
-		$oneDayinterval = DateInterval::createFromDateString('1 day');
-		$period   = new DatePeriod($startDateObj, $oneDayinterval, $endDateObj);
-		
-		$count = 0;
-		
-		foreach ($period as $dt) {
-
-			// Exclude the Saturday and Sunday. If later we want to consider holiday, we can add some more complex rules in.
-			if ($dt->format("N") === '6' || $dt->format("N") === '7') {
-				continue;
-			} else {
-				$count++;
-			}
+	function __validateDateInput($date) {
+		if (empty($date)) {
+			return false;
 		}
-		return $count;
+		return !!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $date);
+	}
+	
+	function __validateTimeZoneInput($timezone) {
+		
+		return in_array($timezone, $this->getSupportedTimeZones()['supportedTimeZones']);
+	}
+	
+	function getSupportedTimeZones() {
+		$result = array();
+		$result['supportedTimeZones'] = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
+		return $result;
 	}
 }
 
