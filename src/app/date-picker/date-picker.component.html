@@ -1,16 +1,27 @@
 <ngb-alert [dismissible]="false">
-  Please pick a pair of start and end dates. Please make sure you have made end date later than the start date. Exclude the end day.
-  The start date timezone will be considered for weekends and public holiday calculation.
+  <ul>
+    <li>Please pick a pair of start and end dates. </li>
+    <li>The result of calculation will <span style="color: red">EXCLUDE</span> the end date. </li>
+    <li>The start date timezone will be considered as the primary timezone for weekends and public holiday calculation.</li>
+    <li>
+    	For demonstration purpose, Sydney has been chosen to be the special city having Friday, and Saturday as weekend.
+    	This is configurable in server side code DateCaculator.php.
+    </li>
+    <li>
+    	For demonstration purpose, Adelaide has been chosen to be the only city in the world having public holidays (lucky us).
+    	This is totally configurable, and built in the general way to count changing to use web service later.
+    </li>
+  </ul>
 </ngb-alert>
 
-<ngb-alert [dismissible]="false" type='danger' *ngIf="errorMessage" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert>
+<ngb-alert [dismissible]="true" type='danger' *ngIf="errorMessage" (close)="errorMessage = null">{{ errorMessage }}</ngb-alert>
 
 <form #dateFrom="ngForm" class="center">
   
   <div class="form-group m-2 w-50" >
     <div class="input-group">
       <label for="dp1" class="center m-2" style="width:100px">Start Date: </label>
-      <input id="dp1" class="form-control" placeholder="yyyy-mm-dd"
+      <input id="dp1" class="form-control date-input" placeholder="yyyy-mm-dd"
              name="dp1" [(ngModel)]="startDate" ngbDatepicker #startDateInput="ngbDatepicker">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary" (click)="startDateInput.toggle()" type="button">
@@ -34,7 +45,7 @@
     <div class="form-group m-2 w-50" >
     <div class="input-group">
       <label for="dp2" class="center m-2" style="width:100px">End Date: </label>
-      <input id="dp2" class="form-control" placeholder="yyyy-mm-dd" 
+      <input id="dp2" class="form-control date-input" placeholder="yyyy-mm-dd" 
              name="dp2" [(ngModel)]="endDate" ngbDatepicker #endDateInput="ngbDatepicker">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary" (click)="endDateInput.toggle()" type="button">
@@ -57,6 +68,7 @@
   
   <button type="button" class="btn btn-primary m-2" [disabled]="!dateFrom.form.valid || !dateFrom.form.touched" 
   		(click)="onClick($event)">Submit</button>
+  <img src="assets/img/loading.gif" style="cursor: pointer;" *ngIf="isLoading"/>
 </form>
 
 <hr/>
@@ -67,9 +79,8 @@
 	<pre>End Date Timezone: {{ endTimeZone }}</pre>
 </div>
 
-<div *ngIf="intervalDays">
+<div *ngIf="intervalDays !== undefined">
 	<pre>Days: {{ intervalDays  }}</pre>
 	<pre>Weeks: {{ intervalWeeks  }}</pre>
 	<pre>Weekdays: {{ intervalWeekdays  }}</pre>
-	<pre>Weekdays: {{ weekdaysUsingLoop  }}</pre>
 </div>

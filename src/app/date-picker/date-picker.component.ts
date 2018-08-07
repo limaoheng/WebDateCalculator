@@ -9,7 +9,7 @@ import { log } from 'util';
   styleUrls: ['./date-picker.component.css']
 })
 export class DatePickerComponent {
-  weekdaysUsingLoop: any;
+  isLoading: boolean;
 
   public startDate;
   public startTimeZone;
@@ -49,6 +49,12 @@ export class DatePickerComponent {
   }
 
   onClick(event) {
+    
+    // Clear any error messages.
+    if (this.errorMessage) {
+      this.errorMessage = '';
+    }
+    
     const startDateStr = this.startDate.year + '-' +
       (this.startDate.month > 9 ? this.startDate.month : '0' + this.startDate.month) + '-' +
       (this.startDate.day > 9 ? this.startDate.day : '0' + this.startDate.day);
@@ -69,7 +75,7 @@ export class DatePickerComponent {
     if (this.supportedTimeZones.includes(this.endTimeZone)) {
       endTZ = this.endTimeZone;
     }
-
+    this.isLoading = true;
     this.dateService.calculateDate(startDateStr, endDateStr, startTZ, endTZ).subscribe((data) => {
         if (data['error']) {
           this.errorMessage = data['error']['msg'];
@@ -77,11 +83,11 @@ export class DatePickerComponent {
           this.intervalDays   = data['days'];
           this.intervalWeeks  = data['weeks'];
           this.intervalWeekdays = data['weekdays'];
-          this.weekdaysUsingLoop = data['weekdaysUsingLoop'];
         }
-
+        this.isLoading = false;
       }, (error) => {
         console.log('Error! ', error);
+        this.isLoading = false;
       });
 
   }

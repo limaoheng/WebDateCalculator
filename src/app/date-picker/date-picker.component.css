@@ -1,0 +1,9 @@
+.dropdown-menu {
+	height: 350px !important;
+	width: 350px !important; 
+	overflow: scroll !important;
+}
+
+.date-input {
+	min-width: 150px;
+}

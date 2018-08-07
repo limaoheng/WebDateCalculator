@@ -1,12 +1,17 @@
 <?php 
 
-class DateController extends Controller {
+class DateController {
 	
 	
 	/**
 	 * Calculate related information from two dates 
 	 * 
-	 * @return NULL[]
+	 * @return 
+	 * {
+	 * 	'days':  $days;
+	 *  'weeks': $weeks;
+	 *  'weekdays': $weekdays;
+	 * }
 	 */
 	function calculateDate() {
 		$startDate 			= $_POST['startDate'];
@@ -19,27 +24,27 @@ class DateController extends Controller {
 			throw new Exception("Please input correct date. Input start date: $startDate, and input end date: $endDate");
 		}
 		
+		if ($startDate > $endDate) {
+			throw new Exception("Please make sure the start date is earlier than the end date. Input start date: $startDate, and input end date: $endDate");
+		}
+		
 		if (!$this->__validateTimeZoneInput($startTimeZone) || !$this->__validateTimeZoneInput($endTimeZone) ) {
 			throw new Exception("Please input correct time zone: start timezone: $startTimeZone and end timezone: $endTimeZone");
 		}
 		
-		$startDateObj = new DateTime($startDate);
-		$startDateObj->setTimezone(new DateTimeZone($startTimeZone));
-		$endDateObj = new DateTime($endDate);
-		$endDateObj->setTimezone(new DateTimeZone($endTimeZone));
+		$startDateObj = new DateTime($startDate, new DateTimeZone($startTimeZone));
+		$endDateObj = new DateTime($endDate, new DateTimeZone($endTimeZone));
 		
 		$dateCal = new DateCalculator($startDateObj, $endDateObj);
 		$days = $dateCal->getDays();
 		$weeks = $dateCal->getFullWeeks();
 		$weekdays = $dateCal->getWeekdays();
-		$weekdaysUsingLoop = $dateCal->getWeekdaysUsingLoop();
 		
 		$result = array();		
 		
 		$result['days'] 		= $days;
 		$result['weeks'] 		= $weeks;
 		$result['weekdays'] 	= $weekdays;
-		$result['weekdaysUsingLoop'] 	= $weekdaysUsingLoop;
 		
 		return $result;
 	}
@@ -56,6 +61,10 @@ class DateController extends Controller {
 		return in_array($timezone, $this->getSupportedTimeZones()['supportedTimeZones']);
 	}
 	
+	/**
+	 * Get a list of PHP supported timezone names.
+	 * @return string[]
+	 */
 	function getSupportedTimeZones() {
 		$result = array();
 		$result['supportedTimeZones'] = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
